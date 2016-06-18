@@ -1,7 +1,7 @@
 <?php
 include_once('config.php');
 
-session_set_cookie_params(1,"/");
+session_set_cookie_params(30,"/");
 session_start();
 
 include_once('setup_db_conn.php');
