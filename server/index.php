@@ -42,7 +42,7 @@ mysqli_close($link);
 			var responseArr = response.split(";");
 			for(i=0; i<responseArr.length; i++) {
 				var entryArr = responseArr[i].split(",");
-				//console.log(entryArr);
+				console.log(entryArr);
 				data.addRow([[parseInt(entryArr[0]),parseInt(entryArr[1]),parseInt(entryArr[2])],parseInt(entryArr[3])]);
 			}
 		}
