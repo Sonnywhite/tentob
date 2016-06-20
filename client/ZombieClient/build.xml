@@ -5,9 +5,9 @@
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="F:/Entwicklung/workspace-test"/>
-    <property name="dir.jarfile" value="C:/Users/Sonnywhite/Documents/GitHub/tentob/executables"/>
+    <property name="dir.jarfile" value="C:/Users/Sonnywhite/Documents/GitHub/tentob/client/executables"/>
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/tentob-1.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="${dir.jarfile}/tentob-2.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="org.tentob.Main"/>
                 <attribute name="Class-Path" value="."/>

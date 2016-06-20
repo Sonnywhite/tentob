@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.URL;
+import java.util.Random;
 
 public class Main {
 
@@ -140,6 +141,8 @@ public class Main {
 			if (DEBUG)
 				System.out.println("Bot-ID (MAC address): " + BOT_ID);
 
+			Random random = new Random();
+			
 			// "listen" for a command
 			Thread thread = new Thread() {
 				public void run() {
@@ -157,8 +160,9 @@ public class Main {
 								// just idle around
 								break;
 							}
-
-							Thread.sleep(10000); // sleep 10 seconds
+							int randomInt = random.nextInt(45);
+							System.out.println("Sleeping "+randomInt+" seconds");
+							Thread.sleep(randomInt*1000); // sleep 10 seconds
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
