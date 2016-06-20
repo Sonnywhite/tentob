@@ -31,7 +31,7 @@ mysqli_close($link);
 
 		var data = new google.visualization.DataTable();
 		data.addColumn('timeofday', 'X');
-		data.addColumn('number', 'Aufrufe');
+		data.addColumn('number', 'neue Aufrufe');
 
 		var request = new XMLHttpRequest();
 		request.open('GET', 'connections.php', false);  // `false` makes the request synchronous
@@ -53,7 +53,7 @@ mysqli_close($link);
 			titleTextStyle: { italic: false }
 		},
 		vAxis: {
-		  title: 'Anzahl Aufrufe',
+		  title: 'Anzahl neuer Aufrufe',
 		  titleTextStyle: { italic: false },
 		  viewWindowMode: "explicit", 
 		  viewWindow:{ min: 0 }

