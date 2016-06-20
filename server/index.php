@@ -1,26 +1,22 @@
 <?php
-include_once('config.php');
-
 session_set_cookie_params(30,"/");
 session_start();
 
+include_once('config.php');
 include_once('setup_db_conn.php');
 
 // new session?
 $query = "SELECT * FROM visits WHERE session_id=".session_id();
 $result = mysqli_query($link,$query);
 if(!$result || mysqli_num_rows($result)==0) {
-	
-	// yet unknown session
-	$query = "INSERT INTO visits (session_id) VALUES ('".session_id()."')";
+	// unknown session
+	$query = "INSERT INTO visits (session_id,remote_address) VALUES ('".session_id()."','".getenv("REMOTE_ADDR")."')";
 	mysqli_query($link,$query);
 } else {
 	// known session
 	mysqli_free_result($result);
 }
-
 mysqli_close($link);
-
 
 ?>
 <html>
@@ -30,18 +26,6 @@ mysqli_close($link);
 <script type="text/javascript">
 	google.charts.load('current', {packages: ['corechart', 'line']});
 	google.charts.setOnLoadCallback(drawBasic);
-
-	/*
-	function functABC(){
-		$.ajax({
-			url: 'connections.php',
-			method: 'GET',
-			async: false,
-			success: function(response) {
-				return response;
-			}
-		});
-	}*/
 	
 	function drawBasic() {
 
@@ -65,8 +49,8 @@ mysqli_close($link);
 
 		var options = {
 		hAxis: {
-		  title: 'Uhrzeit',
-		  titleTextStyle: { italic: false }
+			title: 'Uhrzeit',
+			titleTextStyle: { italic: false }
 		},
 		vAxis: {
 		  title: 'Anzahl Aufrufe',
@@ -82,11 +66,12 @@ mysqli_close($link);
 	}
 </script>
 </head>
-<body>
+<body style="font-family:sans-serif;">
 <?php 
 	echo "Session-ID: ".session_id()."<br>"; 
 	$date = new DateTime();
-	echo "Anfrage um: ".$date->format("H:i:s")." Uhr";
+	echo "Anfrage um: ".$date->format("H:i:s")." Uhr<br>";
+	echo "IP-Adresse: ".getenv("REMOTE_ADDR");
 ?>
 <div style="width:80%;height:60%" id="chart_div"></div>
 </body>
