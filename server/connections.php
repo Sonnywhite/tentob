@@ -13,7 +13,8 @@ date_sub($date, date_interval_create_from_date_string('60 minutes'));
 
 $i = 0;
 while($i <61) {
-	$query = "SELECT *, DATE_FORMAT(visits.first_visit,'%H:%i') AS time, COUNT(visits.session_id) AS count FROM visits GROUP BY time HAVING time = '".$date->format("H:i")."'";
+	$query = "SELECT *, DATE_FORMAT(visits.first_visit,'%H:%i') AS time, DATE_FORMAT(visits.first_visit,'%d-%m-%Y') AS today, COUNT(visits.session_id) AS count "
+			."FROM visits GROUP BY time HAVING time = '".$date->format("H:i")."' AND today = '".$date->format("d-m-Y")."'";
 	echo $date->format("H").','.$date->format("i").',0,';
 	if($result = mysqli_query($link,$query)) {
 		if($row = mysqli_fetch_assoc($result))

