@@ -34,9 +34,13 @@ if(isset($_POST["frequency"])&&isset($_POST["duration"])&&isset($_POST["targetur
 		</style>
 	</head>
 	<body style="font-family:sans-serif;">
-
+	
 		<!-- Display Actions -->
 		<div style="float:left;border-right:1px solid;padding-right:10px;">
+			<img src="tentob-50.png">
+			
+			<br>
+			
 			<b>Distributed Denial of Service</b>
 			<p>			
 				<form method="post" action="admin.php">

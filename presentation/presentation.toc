@@ -1,0 +1,11 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {ngerman}
+\beamer@sectionintoc {1}{Motivation}{3}{0}{1}
+\beamer@sectionintoc {2}{Botnetz}{5}{0}{2}
+\beamer@subsectionintoc {2}{1}{Begriffe}{5}{0}{2}
+\beamer@subsectionintoc {2}{2}{Aufbau}{6}{0}{2}
+\beamer@subsectionintoc {2}{3}{Command \& Control}{7}{0}{2}
+\beamer@subsectionintoc {2}{4}{Verbreitung}{8}{0}{2}
+\beamer@subsectionintoc {2}{5}{Anwendung}{9}{0}{2}
+\beamer@sectionintoc {3}{Analyse Storm}{10}{0}{3}
+\beamer@sectionintoc {4}{BYOB}{11}{0}{4}
