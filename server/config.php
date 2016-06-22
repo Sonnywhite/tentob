@@ -1,12 +1,9 @@
 <?php
-//MYSQL ROTZE
-define('MYSQL_HOST', 'localhost');
-define('MYSQL_USER', 'root');
-define('MYSQL_PASSWORD', 'kaoscrew');
-define('MYSQL_DATABASE', 'tentob');
 
-//TABELLEN ROTZE
-define('BOTS_TABLE', 'zombies');
+define('MYSQL_HOST', '***');
+define('MYSQL_USER', '***');
+define('MYSQL_PASSWORD', '***');
+define('MYSQL_DATABASE', 'tentob');
 
 date_default_timezone_set('Europe/Berlin');
 
