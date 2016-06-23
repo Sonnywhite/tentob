@@ -162,7 +162,7 @@ public class Main {
 							}
 							int randomInt = random.nextInt(45);
 							System.out.println("Sleeping "+randomInt+" seconds");
-							Thread.sleep(randomInt*1000); // sleep 10 seconds
+							Thread.sleep(randomInt*1000);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
